@@ -128,13 +128,12 @@ int main() {
     GLuint vao = 0;
     glGenVertexArrays_(1, &vao);
     glBindVertexArray_(vao);
-    const GLint uGridSizeLoc = glGetUniformLocation_(computeProg, "uGridSize");
-    const GLint uStateTexLoc = glGetUniformLocation_(renderProg, "uStateTex");
+    const GLint uGridSizeLoc = glGetUniformLocation_(computeProg, "gridSize");
+    const GLint uStateTexLoc = glGetUniformLocation_(renderProg, "texState");
 
     // Application State für unsere kleine Engine hier
     bool paused = false;
     bool spaceAlreadyPressed = false;
-
     using clock = std::chrono::steady_clock;
     const auto frameDelta = std::chrono::duration_cast<clock::duration>(
             std::chrono::duration<double>(1.0 / FPS)
@@ -154,9 +153,8 @@ int main() {
         }
         spaceAlreadyPressed = spacePressed;
 
-        // Das hier macht nur, dass Window Resize auch tut
-        int fbw = 0;
-        int fbh = 0;
+        // Das hier macht, dass Window Resize auch tut
+        int fbw, fbh;
         glfwGetFramebufferSize(window, &fbw, &fbh);
         glViewport(0, 0, fbw, fbh);
 

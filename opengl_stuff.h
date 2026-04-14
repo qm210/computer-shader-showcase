@@ -143,7 +143,7 @@ extern PFNGLGENVERTEXARRAYSPROC     glGenVertexArrays_;
 extern PFNGLBINDVERTEXARRAYPROC     glBindVertexArray_;
 extern PFNGLDELETEVERTEXARRAYSPROC  glDeleteVertexArrays_;
 
-static void* LoadGL(const char* name) {
+static void* loadGL(const char* name) {
     void* p = reinterpret_cast<void*>(glfwGetProcAddress(name));
     if (!p) {
         std::cerr << "Missing GL symbol: " << name << "\n";
@@ -151,74 +151,71 @@ static void* LoadGL(const char* name) {
     return p;
 }
 
-static bool LoadGLFunctions() {
-    glCreateShader_ = reinterpret_cast<PFNGLCREATESHADERPROC>(LoadGL("glCreateShader"));
-    glShaderSource_ = reinterpret_cast<PFNGLSHADERSOURCEPROC>(LoadGL("glShaderSource"));
-    glCompileShader_ = reinterpret_cast<PFNGLCOMPILESHADERPROC>(LoadGL("glCompileShader"));
-    glGetShaderiv_ = reinterpret_cast<PFNGLGETSHADERIVPROC>(LoadGL("glGetShaderiv"));
-    glGetShaderInfoLog_ = reinterpret_cast<PFNGLGETSHADERINFOLOGPROC>(LoadGL("glGetShaderInfoLog"));
-    glDeleteShader_ = reinterpret_cast<PFNGLDELETESHADERPROC>(LoadGL("glDeleteShader"));
-    glCreateProgram_ = reinterpret_cast<PFNGLCREATEPROGRAMPROC>(LoadGL("glCreateProgram"));
-    glAttachShader_ = reinterpret_cast<PFNGLATTACHSHADERPROC>(LoadGL("glAttachShader"));
-    glLinkProgram_ = reinterpret_cast<PFNGLLINKPROGRAMPROC>(LoadGL("glLinkProgram"));
-    glGetProgramiv_ = reinterpret_cast<PFNGLGETPROGRAMIVPROC>(LoadGL("glGetProgramiv"));
-    glGetProgramInfoLog_ = reinterpret_cast<PFNGLGETPROGRAMINFOLOGPROC>(LoadGL("glGetProgramInfoLog"));
-    glUseProgram_ = reinterpret_cast<PFNGLUSEPROGRAMPROC>(LoadGL("glUseProgram"));
-    glDeleteProgram_ = reinterpret_cast<PFNGLDELETEPROGRAMPROC>(LoadGL("glDeleteProgram"));
-    glGetUniformLocation_ = reinterpret_cast<PFNGLGETUNIFORMLOCATIONPROC>(LoadGL("glGetUniformLocation"));
-    glUniform2i_ = reinterpret_cast<PFNGLUNIFORM2IPROC>(LoadGL("glUniform2i"));
-    glUniform1i_ = reinterpret_cast<PFNGLUNIFORM1IPROC>(LoadGL("glUniform1i"));
-    glDispatchCompute_ = reinterpret_cast<PFNGLDISPATCHCOMPUTEPROC>(LoadGL("glDispatchCompute"));
-    glMemoryBarrier_ = reinterpret_cast<PFNGLMEMORYBARRIERPROC>(LoadGL("glMemoryBarrier"));
-    glBindImageTexture_ = reinterpret_cast<PFNGLBINDIMAGETEXTUREPROC>(LoadGL("glBindImageTexture"));
-    glActiveTexture_ = reinterpret_cast<PFNGLACTIVETEXTUREPROC>(LoadGL("glActiveTexture"));
-    glGenVertexArrays_ = reinterpret_cast<PFNGLGENVERTEXARRAYSPROC>(LoadGL("glGenVertexArrays"));
-    glBindVertexArray_ = reinterpret_cast<PFNGLBINDVERTEXARRAYPROC>(LoadGL("glBindVertexArray"));
-    glDeleteVertexArrays_ = reinterpret_cast<PFNGLDELETEVERTEXARRAYSPROC>(LoadGL("glDeleteVertexArrays"));
+static bool loadGLExtensions() {
+    glCreateShader_ = reinterpret_cast<PFNGLCREATESHADERPROC>(loadGL("glCreateShader"));
+    glShaderSource_ = reinterpret_cast<PFNGLSHADERSOURCEPROC>(loadGL("glShaderSource"));
+    glCompileShader_ = reinterpret_cast<PFNGLCOMPILESHADERPROC>(loadGL("glCompileShader"));
+    glGetShaderiv_ = reinterpret_cast<PFNGLGETSHADERIVPROC>(loadGL("glGetShaderiv"));
+    glGetShaderInfoLog_ = reinterpret_cast<PFNGLGETSHADERINFOLOGPROC>(loadGL("glGetShaderInfoLog"));
+    glDeleteShader_ = reinterpret_cast<PFNGLDELETESHADERPROC>(loadGL("glDeleteShader"));
+    glCreateProgram_ = reinterpret_cast<PFNGLCREATEPROGRAMPROC>(loadGL("glCreateProgram"));
+    glAttachShader_ = reinterpret_cast<PFNGLATTACHSHADERPROC>(loadGL("glAttachShader"));
+    glLinkProgram_ = reinterpret_cast<PFNGLLINKPROGRAMPROC>(loadGL("glLinkProgram"));
+    glGetProgramiv_ = reinterpret_cast<PFNGLGETPROGRAMIVPROC>(loadGL("glGetProgramiv"));
+    glGetProgramInfoLog_ = reinterpret_cast<PFNGLGETPROGRAMINFOLOGPROC>(loadGL("glGetProgramInfoLog"));
+    glUseProgram_ = reinterpret_cast<PFNGLUSEPROGRAMPROC>(loadGL("glUseProgram"));
+    glDeleteProgram_ = reinterpret_cast<PFNGLDELETEPROGRAMPROC>(loadGL("glDeleteProgram"));
+    glGetUniformLocation_ = reinterpret_cast<PFNGLGETUNIFORMLOCATIONPROC>(loadGL("glGetUniformLocation"));
+    glUniform2i_ = reinterpret_cast<PFNGLUNIFORM2IPROC>(loadGL("glUniform2i"));
+    glUniform1i_ = reinterpret_cast<PFNGLUNIFORM1IPROC>(loadGL("glUniform1i"));
+    glDispatchCompute_ = reinterpret_cast<PFNGLDISPATCHCOMPUTEPROC>(loadGL("glDispatchCompute"));
+    glMemoryBarrier_ = reinterpret_cast<PFNGLMEMORYBARRIERPROC>(loadGL("glMemoryBarrier"));
+    glBindImageTexture_ = reinterpret_cast<PFNGLBINDIMAGETEXTUREPROC>(loadGL("glBindImageTexture"));
+    glActiveTexture_ = reinterpret_cast<PFNGLACTIVETEXTUREPROC>(loadGL("glActiveTexture"));
+    glGenVertexArrays_ = reinterpret_cast<PFNGLGENVERTEXARRAYSPROC>(loadGL("glGenVertexArrays"));
+    glBindVertexArray_ = reinterpret_cast<PFNGLBINDVERTEXARRAYPROC>(loadGL("glBindVertexArray"));
+    glDeleteVertexArrays_ = reinterpret_cast<PFNGLDELETEVERTEXARRAYSPROC>(loadGL("glDeleteVertexArrays"));
 
-    return glCreateShader_ && glShaderSource_ && glCompileShader_ && glGetShaderiv_ &&
-           glGetShaderInfoLog_ && glDeleteShader_ && glCreateProgram_ && glAttachShader_ &&
-           glLinkProgram_ && glGetProgramiv_ && glGetProgramInfoLog_ && glUseProgram_ &&
-           glDeleteProgram_ && glGetUniformLocation_ && glUniform2i_ && glUniform1i_ &&
-           glDispatchCompute_ && glMemoryBarrier_ && glBindImageTexture_ && glActiveTexture_ &&
-           glGenVertexArrays_ && glBindVertexArray_ && glDeleteVertexArrays_;
+    return glCreateShader_ != nullptr;
 }
 
-static GLuint CompileShader(GLenum type, const char* src) {
+static GLuint compileShader(GLenum type, const char* src) {
     GLuint shader = glCreateShader_(type);
     glShaderSource_(shader, 1, &src, nullptr);
     glCompileShader_(shader);
 
     GLint ok = GL_FALSE;
     glGetShaderiv_(shader, GL_COMPILE_STATUS, &ok);
-    if (!ok) {
-        GLint len = 0;
-        glGetShaderiv_(shader, GL_INFO_LOG_LENGTH, &len);
-        std::string log(static_cast<size_t>(len), '\0');
-        glGetShaderInfoLog_(shader, len, nullptr, log.data());
-        std::cerr << "Shader compile failed:\n" << log << "\n";
-        glDeleteShader_(shader);
-        return 0;
+    if (ok) {
+        return shader;
     }
-    return shader;
+
+    GLint len;
+    glGetShaderiv_(shader, GL_INFO_LOG_LENGTH, &len);
+    std::string log(len, '\0');
+    glGetShaderInfoLog_(shader, len, nullptr, log.data());
+    std::cerr << "compileShader() failed:\n" << log << "\n";
+    glDeleteShader_(shader);
+    return 0;
 }
 
-static GLuint LinkProgram(std::initializer_list<GLuint> shaders) {
-    GLuint prog = glCreateProgram_();
-    for (GLuint s : shaders) glAttachShader_(prog, s);
-    glLinkProgram_(prog);
+static GLuint linkProgram(std::initializer_list<GLuint> shaders) {
+    GLuint program = glCreateProgram_();
+    for (GLuint s : shaders) glAttachShader_(program, s);
+    glLinkProgram_(program);
 
     GLint ok = GL_FALSE;
-    glGetProgramiv_(prog, GL_LINK_STATUS, &ok);
-    if (!ok) {
-        GLint len = 0;
-        glGetProgramiv_(prog, GL_INFO_LOG_LENGTH, &len);
-        std::string log(static_cast<size_t>(len), '\0');
-        glGetProgramInfoLog_(prog, len, nullptr, log.data());
-        std::cerr << "Program link failed:\n" << log << "\n";
-        exit(EXIT_FAILURE);
+    glGetProgramiv_(program, GL_LINK_STATUS, &ok);
+    if (ok) {
+        return program;
     }
-    return prog;
+
+    GLint len;
+    glGetProgramiv_(program, GL_INFO_LOG_LENGTH, &len);
+    std::string log(len, '\0');
+    glGetProgramInfoLog_(program, len, nullptr, log.data());
+    std::cerr << "linkProgram() failed:\n" << log << "\n";
+    exit(EXIT_FAILURE);
 }
 
 #endif //GOL_SHOWCASE_OPENGL_STUFF_H

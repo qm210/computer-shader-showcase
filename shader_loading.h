@@ -5,15 +5,17 @@
 
 #include "opengl_stuff.h"
 
-std::string ReadTextFile(const std::filesystem::path& path)
+std::string readFile(const std::filesystem::path& path)
 {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        throw std::runtime_error("Failed to open file: " + path.string());
+        throw std::runtime_error("Cannot open file: " + path.string());
     }
+
     file.seekg(0, std::ios::end);
     const std::streamsize size = file.tellg();
     file.seekg(0, std::ios::beg);
+
     std::string text;
     text.resize(static_cast<size_t>(size));
     if (size > 0) {
@@ -22,14 +24,14 @@ std::string ReadTextFile(const std::filesystem::path& path)
     return text;
 }
 
-GLuint CompileShaderFromFile(GLenum type, const std::filesystem::path& path)
+GLuint compileShaderFromFile(GLenum type, const std::filesystem::path& path)
 {
-    const std::string source = ReadTextFile(path);
+    const std::string source = readFile(path);
     const char* src = source.c_str();
 
-    GLuint shader = CompileShader(type, src);
+    GLuint shader = compileShader(type, src);
     if (!shader) {
-        throw std::runtime_error("Shader compile failed: " + path.string());
+        throw std::runtime_error("Invalid Shader: " + path.string());
     }
     return shader;
 }

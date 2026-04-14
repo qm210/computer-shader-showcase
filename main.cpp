@@ -98,7 +98,7 @@ int main() {
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
-    if (!LoadGLFunctions()) {
+    if (!loadGLExtensions()) {
         std::cerr << "Failed to load required OpenGL functions\n";
         glfwDestroyWindow(window);
         glfwTerminate();
@@ -108,11 +108,11 @@ int main() {
     const char* version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     std::cout << "GL_VERSION: " << (version ? version : "unknown") << "\n";
 
-    GLuint vs = CompileShaderFromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
-    GLuint fs = CompileShaderFromFile(GL_FRAGMENT_SHADER, "shaders/fragment.glsl");
-    GLuint cs = CompileShaderFromFile(GL_COMPUTE_SHADER, "shaders/compute.glsl");
-    GLuint renderProg = LinkProgram({vs, fs});
-    GLuint computeProg = LinkProgram({cs});
+    GLuint vs = compileShaderFromFile(GL_VERTEX_SHADER, "shaders/vertex.glsl");
+    GLuint fs = compileShaderFromFile(GL_FRAGMENT_SHADER, "shaders/fragment.glsl");
+    GLuint cs = compileShaderFromFile(GL_COMPUTE_SHADER, "shaders/compute.glsl");
+    GLuint renderProg = linkProgram({vs, fs});
+    GLuint computeProg = linkProgram({cs});
     glDeleteShader_(cs);
     glDeleteShader_(vs);
     glDeleteShader_(fs);

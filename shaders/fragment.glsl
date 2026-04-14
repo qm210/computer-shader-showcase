@@ -1,7 +1,7 @@
 #version 430 core
 
 in vec2 uv;
-out vec4 outColor;
+out vec4 fragColor;
 
 layout(binding = 0) uniform usampler2D uStateTex;
 
@@ -19,5 +19,5 @@ void main() {
 
     vec3 col = alive != 0u ? liveColor : deadColor;
 
-    outColor = vec4(col, 1.0);
+    fragColor = vec4(col, 1.0);
 }

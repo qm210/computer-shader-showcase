@@ -39,10 +39,14 @@ PFNGLGENVERTEXARRAYSPROC     glGenVertexArrays_ = nullptr;
 PFNGLBINDVERTEXARRAYPROC     glBindVertexArray_ = nullptr;
 PFNGLDELETEVERTEXARRAYSPROC  glDeleteVertexArrays_ = nullptr;
 
-// hier mal global - bad, aber geht ja nur ums Prinzip
-#define WIDTH 400
-#define HEIGHT 300
-#define PIXEL_SCALE 3
+constexpr int WIDTH = 400;
+constexpr int HEIGHT = 300;
+constexpr float PIXEL_SCALE = 3.f;
+constexpr double FPS = 5.0;
+
+// Anfangszustand zufallsverteilt
+constexpr float INIT_ALIVE_CHANCE = 0.2;
+constexpr uint8_t INIT_RANDOM_SEED = 0u;
 
 static GLuint createStateTexture(const std::vector<std::uint8_t>& data) {
     GLuint tex = 0;
@@ -62,10 +66,8 @@ static GLuint createStateTexture(const std::vector<std::uint8_t>& data) {
 }
 
 static std::vector<std::uint8_t> initState() {
-    const float initAliveChance = 0.3;
-    std::bernoulli_distribution alive(initAliveChance);
-    std::mt19937 rng(0);
-
+    std::bernoulli_distribution alive(INIT_ALIVE_CHANCE);
+    std::mt19937 rng(INIT_RANDOM_SEED);
     std::vector<std::uint8_t> data(WIDTH * HEIGHT, 0);
     for (auto& v : data) {
         v = alive(rng) ? 1u : 0u;
@@ -86,7 +88,8 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
     GLFWwindow* window = glfwCreateWindow(pxWidth, pxHeight,
-                                          "", nullptr, nullptr);
+                                          "<Space> zum Starten/Pausieren!",
+                                          nullptr, nullptr);
     if (!window) {
         std::cerr << "glfwCreateWindow failed\n";
         glfwTerminate();
@@ -129,13 +132,18 @@ int main() {
     const GLint uStateTexLoc = glGetUniformLocation_(renderProg, "uStateTex");
 
     // Application State für unsere kleine Engine hier
-    constexpr double targetFps = 60.0;
-    const auto frameTime = std::chrono::duration<double>(1.0 / targetFps);
     bool paused = false;
     bool spaceAlreadyPressed = false;
 
+    using clock = std::chrono::steady_clock;
+    const auto frameDelta = std::chrono::duration_cast<clock::duration>(
+            std::chrono::duration<double>(1.0 / FPS)
+    );
+    auto nextFrameTime = clock::now();
     int frameIndex = 0;
+
     while (!glfwWindowShouldClose(window)) {
+        nextFrameTime += frameDelta;
         glfwPollEvents();
 
         // Leertaste zum Anhalten & Weiterlaufen lassen:
@@ -176,13 +184,17 @@ int main() {
         glUniform1i_(uStateTexLoc, 0);
         glActiveTexture_(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, stateTex[pong]);
+
+        // Rendert auf Back Buffer
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
+        // "Swap" macht den Back Buffer im Fenster sichtbar
         glfwSwapBuffers(window);
 
         if (!paused) {
             ++frameIndex;
         }
+        std::this_thread::sleep_until(nextFrameTime);
     }
 
     glDeleteVertexArrays_(1, &vao);

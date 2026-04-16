@@ -1,7 +1,10 @@
 #ifndef GOL_SHOWCASE_OPENGL_STUFF_H
 #define GOL_SHOWCASE_OPENGL_STUFF_H
 
-#include <windows.h>
+// Wie in VL6 angesprochen -- Die OpenGL-DLL stellt nur Grundlegendes bereit,
+// Funktionen für OpenGL > 1.0 muss man nachladen. Dafür gäbe es Hilfen wie GLAD,
+// aber es geht auch manuell, und hier holen wir uns das minimale, was wir brauchen.
+
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 
@@ -91,8 +94,6 @@
 #endif
 
 using GLchar = char;
-using GLintptr = ptrdiff_t;
-using GLsizeiptr = ptrdiff_t;
 
 using PFNGLCREATESHADERPROC = GLuint (APIENTRY*)(GLenum);
 using PFNGLSHADERSOURCEPROC = void (APIENTRY*)(GLuint, GLsizei, const GLchar* const*, const GLint*);
@@ -143,40 +144,42 @@ extern PFNGLGENVERTEXARRAYSPROC     glGenVertexArrays_;
 extern PFNGLBINDVERTEXARRAYPROC     glBindVertexArray_;
 extern PFNGLDELETEVERTEXARRAYSPROC  glDeleteVertexArrays_;
 
-static void* loadGL(const char* name) {
-    void* p = reinterpret_cast<void*>(glfwGetProcAddress(name));
-    if (!p) {
+template<typename T>
+static bool loadGL(T& funcPtr, const char* name) {
+    funcPtr = reinterpret_cast<T>(glfwGetProcAddress(name));
+    if (!funcPtr) {
         std::cerr << "Missing GL symbol: " << name << "\n";
+        return false;
     }
-    return p;
+    return true;
 }
 
 static bool loadGLExtensions() {
-    glCreateShader_ = reinterpret_cast<PFNGLCREATESHADERPROC>(loadGL("glCreateShader"));
-    glShaderSource_ = reinterpret_cast<PFNGLSHADERSOURCEPROC>(loadGL("glShaderSource"));
-    glCompileShader_ = reinterpret_cast<PFNGLCOMPILESHADERPROC>(loadGL("glCompileShader"));
-    glGetShaderiv_ = reinterpret_cast<PFNGLGETSHADERIVPROC>(loadGL("glGetShaderiv"));
-    glGetShaderInfoLog_ = reinterpret_cast<PFNGLGETSHADERINFOLOGPROC>(loadGL("glGetShaderInfoLog"));
-    glDeleteShader_ = reinterpret_cast<PFNGLDELETESHADERPROC>(loadGL("glDeleteShader"));
-    glCreateProgram_ = reinterpret_cast<PFNGLCREATEPROGRAMPROC>(loadGL("glCreateProgram"));
-    glAttachShader_ = reinterpret_cast<PFNGLATTACHSHADERPROC>(loadGL("glAttachShader"));
-    glLinkProgram_ = reinterpret_cast<PFNGLLINKPROGRAMPROC>(loadGL("glLinkProgram"));
-    glGetProgramiv_ = reinterpret_cast<PFNGLGETPROGRAMIVPROC>(loadGL("glGetProgramiv"));
-    glGetProgramInfoLog_ = reinterpret_cast<PFNGLGETPROGRAMINFOLOGPROC>(loadGL("glGetProgramInfoLog"));
-    glUseProgram_ = reinterpret_cast<PFNGLUSEPROGRAMPROC>(loadGL("glUseProgram"));
-    glDeleteProgram_ = reinterpret_cast<PFNGLDELETEPROGRAMPROC>(loadGL("glDeleteProgram"));
-    glGetUniformLocation_ = reinterpret_cast<PFNGLGETUNIFORMLOCATIONPROC>(loadGL("glGetUniformLocation"));
-    glUniform2i_ = reinterpret_cast<PFNGLUNIFORM2IPROC>(loadGL("glUniform2i"));
-    glUniform1i_ = reinterpret_cast<PFNGLUNIFORM1IPROC>(loadGL("glUniform1i"));
-    glDispatchCompute_ = reinterpret_cast<PFNGLDISPATCHCOMPUTEPROC>(loadGL("glDispatchCompute"));
-    glMemoryBarrier_ = reinterpret_cast<PFNGLMEMORYBARRIERPROC>(loadGL("glMemoryBarrier"));
-    glBindImageTexture_ = reinterpret_cast<PFNGLBINDIMAGETEXTUREPROC>(loadGL("glBindImageTexture"));
-    glActiveTexture_ = reinterpret_cast<PFNGLACTIVETEXTUREPROC>(loadGL("glActiveTexture"));
-    glGenVertexArrays_ = reinterpret_cast<PFNGLGENVERTEXARRAYSPROC>(loadGL("glGenVertexArrays"));
-    glBindVertexArray_ = reinterpret_cast<PFNGLBINDVERTEXARRAYPROC>(loadGL("glBindVertexArray"));
-    glDeleteVertexArrays_ = reinterpret_cast<PFNGLDELETEVERTEXARRAYSPROC>(loadGL("glDeleteVertexArrays"));
-
-    return glCreateShader_ != nullptr;
+    bool ok = true;
+    ok &= loadGL(glCreateShader_, "glCreateShader");
+    ok &= loadGL(glShaderSource_, "glShaderSource");
+    ok &= loadGL(glCompileShader_, "glCompileShader");
+    ok &= loadGL(glGetShaderiv_, "glGetShaderiv");
+    ok &= loadGL(glGetShaderInfoLog_, "glGetShaderInfoLog");
+    ok &= loadGL(glDeleteShader_, "glDeleteShader");
+    ok &= loadGL(glCreateProgram_, "glCreateProgram");
+    ok &= loadGL(glAttachShader_, "glAttachShader");
+    ok &= loadGL(glLinkProgram_, "glLinkProgram");
+    ok &= loadGL(glGetProgramiv_, "glGetProgramiv");
+    ok &= loadGL(glGetProgramInfoLog_, "glGetProgramInfoLog");
+    ok &= loadGL(glUseProgram_, "glUseProgram");
+    ok &= loadGL(glDeleteProgram_, "glDeleteProgram");
+    ok &= loadGL(glGetUniformLocation_, "glGetUniformLocation");
+    ok &= loadGL(glUniform2i_, "glUniform2i");
+    ok &= loadGL(glUniform1i_, "glUniform1i");
+    ok &= loadGL(glDispatchCompute_, "glDispatchCompute");
+    ok &= loadGL(glMemoryBarrier_, "glMemoryBarrier");
+    ok &= loadGL(glBindImageTexture_, "glBindImageTexture");
+    ok &= loadGL(glActiveTexture_, "glActiveTexture");
+    ok &= loadGL(glGenVertexArrays_, "glGenVertexArrays");
+    ok &= loadGL(glBindVertexArray_, "glBindVertexArray");
+    ok &= loadGL(glDeleteVertexArrays_, "glDeleteVertexArrays");
+    return ok;
 }
 
 static GLuint compileShader(GLenum type, const char* src) {

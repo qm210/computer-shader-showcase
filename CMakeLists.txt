@@ -1,11 +1,15 @@
 cmake_minimum_required(VERSION 3.20)
 project(gol_showcase LANGUAGES CXX)
 
-# Zielt aktuell nur auf Win32
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# für Linux besser: "Vendor-Neutral Dispatch" von OpenGL.
+if(NOT APPLE)
+  set(OpenGL_GL_PREFERENCE GLVND)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -15,9 +19,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw)
 
+find_package(OpenGL REQUIRED)
+
 add_executable(gol_showcase main.cpp)
 target_compile_definitions(gol_showcase PRIVATE GLFW_INCLUDE_NONE)
-target_link_libraries(gol_showcase PRIVATE glfw opengl32)
+target_link_libraries(gol_showcase PRIVATE glfw OpenGL::GL)
 
 if (MSVC)
   target_compile_options(gol_showcase PRIVATE /W4 /permissive-)

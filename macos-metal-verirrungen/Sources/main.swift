@@ -1,16 +1,3 @@
-Here’s a complete, self‑contained main.swift that:
-
-reacts to Space by toggling pause (via a custom GameView handling keyDown), and
-
-terminates the process when the last window is closed (via applicationShouldTerminateAfterLastWindowClosed).
-
-It assumes:
-
-your SwiftPM executable target is gol-showcase,
-
-Shaders.metallib is bundled as a resource and accessed via Bundle.module.
-
-swift
 import AppKit
 import Metal
 import MetalKit
@@ -94,7 +81,7 @@ final class Renderer: NSObject, MTKViewDelegate {
         mtkView.framebufferOnly = false
         mtkView.preferredFramesPerSecond = Int(FPS)
 
-        // Load precompiled metallib from SwiftPM resources
+        // Load precompiled Shaders.metallib from SwiftPM resources
         guard let libraryURL = Bundle.module.url(forResource: "Shaders",
                                                  withExtension: "metallib"),
               let library = try? device.makeLibrary(URL: libraryURL)
@@ -104,7 +91,7 @@ final class Renderer: NSObject, MTKViewDelegate {
         }
 
         guard let computeFn = library.makeFunction(name: "stepLife"),
-              let vertexFn  = library.makeFunction(name: "fullscreenVertex"),
+              let vertexFn = library.makeFunction(name: "fullscreenVertex"),
               let fragmentFn = library.makeFunction(name: "lifeFragment")
         else {
             fputs("Failed to load shader functions\n", stderr)

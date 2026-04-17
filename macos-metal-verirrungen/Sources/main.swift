@@ -37,7 +37,6 @@ final class Renderer: NSObject, MTKViewDelegate {
         mtkView.device = device
         mtkView.colorPixelFormat = .bgra8Unorm
         mtkView.framebufferOnly = false
-        mtkView.clearColor = MTLClearColorMake(0.08, 0.08, 0.08, 1.0)
         mtkView.preferredFramesPerSecond = Int(FPS)
 
         let resourceURL = Bundle.module.url(forResource: "Shaders", withExtension: "metallib")!

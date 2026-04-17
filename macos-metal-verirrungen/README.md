@@ -5,13 +5,12 @@ Ginge vermutlich auch per xcode, aber das finde heraus, wer möchte...
 
 Die Verzeichnisstruktur könnte auch schöner sein (siehe Package.swift "path"), aber das ist hier noch nicht der Punkt.
 
-```
-# Shader Artifact bauen:
-xcrun -sdk macosx metal -c Shaders.metal -o Shaders.air
-xcrun -sdk macosx metallib Shaders.air -o Sources/gol-showcase/Shaders.metallib
-rm Shaders.air
+```bash
+xcrun -sdk macosx metal -c Shaders/Compute.metal -o Compute.air
+xcrun -sdk macosx metal -c Shaders/Render.metal  -o Render.air
+xcrun -sdk macosx metallib Compute.air Render.air -o Sources/Shaders.metallib
+rm *.air
 
-# Swift 
 swift run
 ```
 

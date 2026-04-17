@@ -9,8 +9,10 @@ struct GridSize {
 kernel void stepLife(texture2d<uint, access::read>  srcState [[texture(0)]],
                      texture2d<uint, access::write> dstState [[texture(1)]],
                      constant GridSize& grid [[buffer(0)]],
-                     uint2 gid [[thread_position_in_grid]]) {
-    if (gid.x >= grid.width || gid.y >= grid.height) return;
+                     uint2 gid [[thread_position_in_grid]]
+) {
+    if (gid.x >= grid.width || gid.y >= grid.height)
+        return;
 
     uint alive = srcState.read(gid).r;
     uint neighbors = 0;
@@ -32,29 +34,4 @@ kernel void stepLife(texture2d<uint, access::read>  srcState [[texture(0)]],
     }
 
     dstState.write(uint4(nextAlive, 0, 0, 0), gid);
-}
-
-struct VSOut {
-    float4 position [[position]];
-    float2 uv;
-};
-
-vertex VSOut fullscreenVertex(uint vid [[vertex_id]]) {
-    float2 pos[3] = {
-        float2(-1.0, -1.0),
-        float2( 3.0, -1.0),
-        float2(-1.0,  3.0)
-    };
-    VSOut out;
-    out.position = float4(pos[vid], 0.0, 1.0);
-    out.uv = pos[vid] * 0.5 + 0.5;
-    return out;
-}
-
-fragment float4 lifeFragment(VSOut in [[stage_in]],
-                             texture2d<uint, access::sample> stateTex [[texture(0)]]) {
-    constexpr sampler s(coord::normalized, address::clamp_to_edge, filter::nearest);
-    uint alive = stateTex.sample(s, in.uv).r;
-    float c = alive > 0 ? 1.0 : 0.0;
-    return float4(c, c, c, 1.0);
 }

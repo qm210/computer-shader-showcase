@@ -3,6 +3,15 @@ Ist unabhängig vom Stammverzeichnis und mein Erstversuch, das OpenGL4.3/C++-Pro
 ## Build 
 Ginge vermutlich auch per xcode, aber das finde heraus, wer möchte...
 
-```bash
+Die Verzeichnisstruktur könnte auch schöner sein (siehe Package.swift "path"), aber das ist hier noch nicht der Punkt.
+
+```
+# Shader Artifact bauen:
+xcrun -sdk macosx metal -c Shaders.metal -o Shaders.air
+xcrun -sdk macosx metallib Shaders.air -o Sources/gol-showcase/Shaders.metallib
+rm Shaders.air
+
+# Swift 
 swift run
 ```
+

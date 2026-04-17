@@ -87,7 +87,6 @@ final class Renderer: NSObject, MTKViewDelegate {
             }
         }
         tex.replace(region: MTLRegionMake2D(0, 0, WIDTH, HEIGHT), mipmapLevel: 0, withBytes: data, bytesPerRow: WIDTH)
-        tex.didModifyRange(0..<tex.allocatedSize)
         return tex
     }
 

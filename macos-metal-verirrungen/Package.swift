@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.6
 import PackageDescription
 
 let package = Package(
@@ -12,7 +12,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "gol-showcase",
-            path: "Sources/gol-showcase",
+            path: ".",
             resources: [.copy("Shaders.metallib")],
             linkerSettings: [
                 .linkedFramework("AppKit"),

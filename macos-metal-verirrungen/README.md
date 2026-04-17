@@ -8,7 +8,7 @@ Die Verzeichnisstruktur könnte auch schöner sein (siehe Package.swift "path"),
 ```bash
 xcrun -sdk macosx metal -c Shaders/Compute.metal -o Compute.air
 xcrun -sdk macosx metal -c Shaders/Render.metal  -o Render.air
-xcrun -sdk macosx metallib Compute.air Render.air -o Sources/Shaders.metallib
+xcrun -sdk macosx metallib Compute.air Render.air -o Shaders.metallib
 rm *.air
 
 swift run

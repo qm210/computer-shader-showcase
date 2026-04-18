@@ -39,6 +39,7 @@ message(STATUS "EMBEDDED_SHADERS count = ${embedded_count}")
 
 add_executable(gol_plus
     main.cpp
+    shader_reading.cpp
     ${EMBEDDED_SHADERS}
 )
 

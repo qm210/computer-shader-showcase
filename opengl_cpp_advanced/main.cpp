@@ -1,6 +1,5 @@
 #include <GLFW/glfw3.h>
 #include <GL/glcorearb.h>
-#include "shader_reading.h"
 #include "opengl_loader.h"
 PFNGLCREATESHADERPROC        glCreateShader_ = nullptr;
 PFNGLSHADERSOURCEPROC        glShaderSource_ = nullptr;
@@ -50,6 +49,9 @@ PFNGLGETSTRINGPROC           glGetString_ = nullptr;
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <filesystem>
+
+GLuint compileShaderFromFile(GLenum type, const std::filesystem::path& path);
 
 constexpr int WIDTH = 300;
 constexpr int HEIGHT = 200;

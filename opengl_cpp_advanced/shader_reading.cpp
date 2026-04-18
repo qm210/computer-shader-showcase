@@ -1,5 +1,3 @@
-#pragma once
-
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -7,7 +5,7 @@
 
 #include "opengl_loader.h"
 
-std::string readFile(const std::filesystem::path& path)
+static std::string readFile(const std::filesystem::path& path)
 {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
@@ -35,16 +33,16 @@ namespace embedded_shaders {
     extern const unsigned char compute_glsl[];
     extern const std::size_t compute_glsl_size;
 
-    inline std::string_view tryRead(const std::filesystem::path& path) {
+    static inline std::string_view tryRead(const std::filesystem::path& path) {
         std::string stem = path.stem().string();
         if (stem == "fragment") {
-            return std::string_view(reinterpret_cast<const char*>(fragment_glsl), fragment_glsl_size);
+            return {reinterpret_cast<const char*>(fragment_glsl), fragment_glsl_size};
         }
         else if (stem == "vertex") {
-            return std::string_view(reinterpret_cast<const char*>(fragment_glsl), fragment_glsl_size);
+            return {reinterpret_cast<const char*>(vertex_glsl), vertex_glsl_size};
         }
         else if (stem == "compute") {
-            return std::string_view(reinterpret_cast<const char*>(compute_glsl), compute_glsl_size);
+            return {reinterpret_cast<const char*>(compute_glsl), compute_glsl_size};
         }
         else {
             return "";

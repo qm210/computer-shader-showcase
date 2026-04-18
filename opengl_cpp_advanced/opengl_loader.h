@@ -4,6 +4,7 @@
 // Wie in VL6 angesprochen -- Die OpenGL-DLL stellt nur Grundlegendes bereit,
 // und aus cross-platform-Gründen laden wir deswegen alles (es gäbe Helfer wie GLAD),
 // aber hier nehmen wir nur das Minimum, das wir brauchen.
+#include <GLFW/glfw3.h>
 #include <GL/glcorearb.h>
 
 #include <vector>

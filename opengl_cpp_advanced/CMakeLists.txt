@@ -22,7 +22,26 @@ FetchContent_MakeAvailable(glfw)
 
 find_package(OpenGL REQUIRED)
 
-add_executable(gol_plus main.cpp)
+include(embed_shaders.cmake)
+file(GLOB SHADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/shaders/*.glsl")
+set(EMBEDDED_SHADERS "")
+foreach(shader ${SHADER_FILES})
+  get_filename_component(name "${shader}" NAME)
+  string(MAKE_C_IDENTIFIER "${name}" var_name)
+  set(out_cpp "${CMAKE_CURRENT_BINARY_DIR}/${var_name}.cpp")
+  embed_resource("${shader}" "${out_cpp}" "${var_name}")
+  list(APPEND EMBEDDED_SHADERS "${out_cpp}")
+endforeach()
+
+message(STATUS "EMBEDDED_SHADERS = ${EMBEDDED_SHADERS}")
+list(LENGTH EMBEDDED_SHADERS embedded_count)
+message(STATUS "EMBEDDED_SHADERS count = ${embedded_count}")
+
+add_executable(gol_plus
+    main.cpp
+    ${EMBEDDED_SHADERS}
+)
+
 target_compile_definitions(gol_plus PRIVATE GLFW_INCLUDE_NONE)
 target_link_libraries(gol_plus PRIVATE glfw OpenGL::GL)
 
@@ -33,8 +52,8 @@ else()
 endif()
 
 # shaders/ kopieren, weil zur Laufzeit gelesen
-add_custom_command(TARGET gol_plus POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/shaders
-    $<TARGET_FILE_DIR:gol_plus>/shaders
-)
+#add_custom_command(TARGET gol_plus POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_directory
+#    ${CMAKE_SOURCE_DIR}/shaders
+#    $<TARGET_FILE_DIR:gol_plus>/shaders
+#)

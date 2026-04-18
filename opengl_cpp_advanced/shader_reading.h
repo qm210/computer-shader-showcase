@@ -1,3 +1,5 @@
+#pragma once
+
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
@@ -24,10 +26,39 @@ std::string readFile(const std::filesystem::path& path)
     return text;
 }
 
+namespace embedded_shaders {
+    // Automatisch generiert, siehe embed_shaders.cmake
+    extern const unsigned char fragment_glsl[];
+    extern const std::size_t fragment_glsl_size;
+    extern const unsigned char vertex_glsl[];
+    extern const std::size_t vertex_glsl_size;
+    extern const unsigned char compute_glsl[];
+    extern const std::size_t compute_glsl_size;
+
+    inline std::string_view tryRead(const std::filesystem::path& path) {
+        std::string stem = path.stem().string();
+        if (stem == "fragment") {
+            return std::string_view(reinterpret_cast<const char*>(fragment_glsl), fragment_glsl_size);
+        }
+        else if (stem == "vertex") {
+            return std::string_view(reinterpret_cast<const char*>(fragment_glsl), fragment_glsl_size);
+        }
+        else if (stem == "compute") {
+            return std::string_view(reinterpret_cast<const char*>(compute_glsl), compute_glsl_size);
+        }
+        else {
+            return "";
+        }
+    }
+}
+
 GLuint compileShaderFromFile(GLenum type, const std::filesystem::path& path)
 {
-    const std::string source = readFile(path);
-    const char* src = source.c_str();
+    std::string source = std::string(embedded_shaders::tryRead(path));
+    if (source.empty()) {
+        source = readFile(path);
+    }
+    const char *src = source.c_str();
 
     GLuint shader = compileShader(type, src);
     if (!shader) {

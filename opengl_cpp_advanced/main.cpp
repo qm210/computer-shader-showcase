@@ -51,9 +51,9 @@ PFNGLGETSTRINGPROC           glGetString_ = nullptr;
 #include <chrono>
 #include <thread>
 
-constexpr int WIDTH = 400;
-constexpr int HEIGHT = 300;
-constexpr float PIXEL_SCALE = 3.f;
+constexpr int WIDTH = 300;
+constexpr int HEIGHT = 200;
+constexpr float PIXEL_SCALE = 4.f;
 constexpr double FPS = 25.0;
 
 // Anfangszustand zufallsverteilt
@@ -168,7 +168,7 @@ int main() {
     const int pxHeight = HEIGHT * PIXEL_SCALE;
     std::string title("<Space> pausiert, <Esc> beendet, <Enter> erzeugt zufällige Neue.");
     if (AGE_MAX_SECONDS > 0.) {
-        title += " Sterben nach " + std::to_string(AGE_MAX_SECONDS) + " sec.";
+        title += " Sterben nach " + std::format("{:.2f} sec.", AGE_MAX_SECONDS);
     }
     GLFWwindow* window = glfwCreateWindow(pxWidth, pxHeight, title.c_str(), nullptr, nullptr);
     if (!window) {

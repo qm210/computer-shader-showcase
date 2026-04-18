@@ -2,11 +2,9 @@
 #define GOL_SHOWCASE_OPENGL_STUFF_H
 
 // Wie in VL6 angesprochen -- Die OpenGL-DLL stellt nur Grundlegendes bereit,
-// Funktionen für OpenGL > 1.0 muss man nachladen. Dafür gäbe es Hilfen wie GLAD,
-// aber es geht auch manuell, und hier holen wir uns das minimale, was wir brauchen.
-
-#include <GL/gl.h>
-#include <GLFW/glfw3.h>
+// und aus cross-platform-Gründen laden wir deswegen alles (es gäbe Helfer wie GLAD),
+// aber hier nehmen wir nur das Minimum, das wir brauchen.
+#include <GL/glcorearb.h>
 
 #include <vector>
 #include <string>
@@ -119,6 +117,17 @@ using PFNGLGENVERTEXARRAYSPROC = void (APIENTRY*)(GLsizei, GLuint*);
 using PFNGLBINDVERTEXARRAYPROC = void (APIENTRY*)(GLuint);
 using PFNGLDELETEVERTEXARRAYSPROC = void (APIENTRY*)(GLsizei, const GLuint*);
 using PFNGLGETSTRINGIPROC = const GLubyte* (APIENTRY*)(GLenum, GLuint);
+using PFNGLGENTEXTURESPROC = void (APIENTRY*)(GLsizei, GLuint*);
+using PFNGLBINDTEXTUREPROC = void (APIENTRY*)(GLenum, GLuint);
+using PFNGLTEXPARAMETERIPROC = void (APIENTRY*)(GLenum, GLenum, GLint);
+using PFNGLPIXELSTOREIPROC    = void (APIENTRY*)(GLenum, GLint);
+using PFNGLTEXIMAGE2DPROC     = void (APIENTRY*)(GLenum, GLint, GLint,
+                                                 GLsizei, GLsizei, GLint,
+                                                 GLenum, GLenum, const void*);
+using PFNGLVIEWPORTPROC       = void (APIENTRY*)(GLint, GLint, GLsizei, GLsizei);
+using PFNGLDRAWARRAYSPROC     = void (APIENTRY*)(GLenum, GLint, GLsizei);
+using PFNGLDELETETEXTURESPROC = void (APIENTRY*)(GLsizei, const GLuint*);
+using PFNGLGETSTRINGPROC      = const GLubyte* (APIENTRY*)(GLenum);
 
 extern PFNGLCREATESHADERPROC        glCreateShader_;
 extern PFNGLSHADERSOURCEPROC        glShaderSource_;
@@ -143,6 +152,16 @@ extern PFNGLACTIVETEXTUREPROC       glActiveTexture_;
 extern PFNGLGENVERTEXARRAYSPROC     glGenVertexArrays_;
 extern PFNGLBINDVERTEXARRAYPROC     glBindVertexArray_;
 extern PFNGLDELETEVERTEXARRAYSPROC  glDeleteVertexArrays_;
+    // Die folgenden sind (ohne Unterstrich) unter Windows aus OpenGL 1.0 vorhanden, aber für Linux:
+extern PFNGLGENTEXTURESPROC         glGenTextures_;
+extern PFNGLBINDTEXTUREPROC         glBindTexture_;
+extern PFNGLTEXPARAMETERIPROC       glTexParameteri_;
+extern PFNGLPIXELSTOREIPROC         glPixelStorei_;
+extern PFNGLTEXIMAGE2DPROC          glTexImage2D_;
+extern PFNGLVIEWPORTPROC            glViewport_;
+extern PFNGLDRAWARRAYSPROC          glDrawArrays_;
+extern PFNGLDELETETEXTURESPROC      glDeleteTextures_;
+extern PFNGLGETSTRINGPROC           glGetString_;
 
 template<typename T>
 static bool loadGL(T& funcPtr, const char* name) {
@@ -179,6 +198,15 @@ static bool loadGLExtensions() {
     ok &= loadGL(glGenVertexArrays_, "glGenVertexArrays");
     ok &= loadGL(glBindVertexArray_, "glBindVertexArray");
     ok &= loadGL(glDeleteVertexArrays_, "glDeleteVertexArrays");
+    ok &= loadGL(glGenTextures_, "glGenTextures");
+    ok &= loadGL(glBindTexture_, "glBindTexture");
+    ok &= loadGL(glTexParameteri_, "glTexParameteri");
+    ok &= loadGL(glPixelStorei_, "glPixelStorei");
+    ok &= loadGL(glTexImage2D_, "glTexImage2D");
+    ok &= loadGL(glViewport_, "glViewport");
+    ok &= loadGL(glDrawArrays_, "glDrawArrays");
+    ok &= loadGL(glDeleteTextures_, "glDeleteTextures");
+    ok &= loadGL(glGetString_, "glGetString");
     return ok;
 }
 

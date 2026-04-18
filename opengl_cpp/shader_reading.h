@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "opengl_stuff.h"
+#include "opengl_loader.h"
 
 std::string readFile(const std::filesystem::path& path)
 {

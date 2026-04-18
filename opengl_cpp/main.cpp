@@ -1,17 +1,7 @@
-#include <GL/gl.h>
 #include <GLFW/glfw3.h>
-
-#include <array>
-#include <cstdint>
-#include <cstdlib>
-#include <iostream>
-#include <random>
-#include <vector>
-#include <chrono>
-#include <thread>
-
-#include "shader_loading.h"
-#include "opengl_stuff.h"
+#include <GL/glcorearb.h>
+#include "shader_reading.h"
+#include "opengl_loader.h"
 PFNGLCREATESHADERPROC        glCreateShader_ = nullptr;
 PFNGLSHADERSOURCEPROC        glShaderSource_ = nullptr;
 PFNGLCOMPILESHADERPROC       glCompileShader_ = nullptr;
@@ -35,6 +25,24 @@ PFNGLACTIVETEXTUREPROC       glActiveTexture_ = nullptr;
 PFNGLGENVERTEXARRAYSPROC     glGenVertexArrays_ = nullptr;
 PFNGLBINDVERTEXARRAYPROC     glBindVertexArray_ = nullptr;
 PFNGLDELETEVERTEXARRAYSPROC  glDeleteVertexArrays_ = nullptr;
+PFNGLGENTEXTURESPROC         glGenTextures_ = nullptr;
+PFNGLBINDTEXTUREPROC         glBindTexture_ = nullptr;
+PFNGLTEXPARAMETERIPROC       glTexParameteri_ = nullptr;
+PFNGLPIXELSTOREIPROC         glPixelStorei_ = nullptr;
+PFNGLTEXIMAGE2DPROC          glTexImage2D_ = nullptr;
+PFNGLVIEWPORTPROC            glViewport_ = nullptr;
+PFNGLDRAWARRAYSPROC          glDrawArrays_ = nullptr;
+PFNGLDELETETEXTURESPROC      glDeleteTextures_ = nullptr;
+PFNGLGETSTRINGPROC           glGetString_ = nullptr;
+
+#include <array>
+#include <cstdint>
+#include <cstdlib>
+#include <iostream>
+#include <random>
+#include <vector>
+#include <chrono>
+#include <thread>
 
 constexpr int WIDTH = 400;
 constexpr int HEIGHT = 300;
@@ -47,18 +55,18 @@ constexpr uint8_t INIT_RANDOM_SEED = 0u;
 
 static GLuint createStateTexture(const std::vector<std::uint8_t>& data) {
     GLuint tex = 0;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI,
+    glGenTextures_(1, &tex);
+    glBindTexture_(GL_TEXTURE_2D, tex);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri_(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glPixelStorei_(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D_(GL_TEXTURE_2D, 0, GL_R8UI,
                  WIDTH, HEIGHT,
                  0, GL_RED_INTEGER, GL_UNSIGNED_BYTE,
                  data.data());
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture_(GL_TEXTURE_2D, 0);
     return tex;
 }
 
@@ -101,7 +109,7 @@ int main() {
         glfwTerminate();
         return EXIT_FAILURE;
     }
-    const char* version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+    const char* version = reinterpret_cast<const char*>(glGetString_(GL_VERSION));
     std::cout << "GL_VERSION: " << (version ? version : "unknown") << "\n";
 
     // <-- bis hierhin Infrastruktur-Code für ein Fenster mit OpenGL-Support.
@@ -167,7 +175,7 @@ int main() {
         // Das hier ist nur für konsistentes Window-Resize da
         int fbw, fbh;
         glfwGetFramebufferSize(window, &fbw, &fbh);
-        glViewport(0, 0, fbw, fbh);
+        glViewport_(0, 0, fbw, fbh);
 
         // "Ping-Pong" wie man es von Framebuffern kennt,
         // hier nur auf den Texturen für den Compute-Shader.
@@ -199,8 +207,8 @@ int main() {
         glUseProgram_(renderProgram);
         glUniform1i_(locTexState, 0);
         glActiveTexture_(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, stateTex[pong]);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindTexture_(GL_TEXTURE_2D, stateTex[pong]);
+        glDrawArrays_(GL_TRIANGLES, 0, 3);
 
         // "Swap" macht den Back-Buffer dann im Fenster erst sichtbar
         glfwSwapBuffers(window);
@@ -214,7 +222,7 @@ int main() {
 
     // Aufräumen - ist einfach sinnvoll, sich keine Memory Leaks anzugewöhnen.
     glDeleteVertexArrays_(1, &vao);
-    glDeleteTextures(2, stateTex.data());
+    glDeleteTextures_(2, stateTex.data());
     glDeleteProgram_(computeProgram);
     glDeleteProgram_(renderProgram);
     // ...damit ist OpenGL wieder sauber; auch das Fenster kann jetzt weg:

@@ -5,7 +5,7 @@
 
 #include "opengl_loader.h"
 
-static std::string readFile(const std::filesystem::path& path)
+std::string readFile(const std::filesystem::path& path)
 {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
@@ -22,6 +22,45 @@ static std::string readFile(const std::filesystem::path& path)
         file.read(text.data(), size);
     }
     return text;
+}
+
+GLuint compileShader(GLenum type, const char* src) {
+    GLuint shader = glCreateShader_(type);
+    glShaderSource_(shader, 1, &src, nullptr);
+    glCompileShader_(shader);
+
+    GLint ok = GL_FALSE;
+    glGetShaderiv_(shader, GL_COMPILE_STATUS, &ok);
+    if (ok) {
+        return shader;
+    }
+
+    GLint len;
+    glGetShaderiv_(shader, GL_INFO_LOG_LENGTH, &len);
+    std::string log(len, '\0');
+    glGetShaderInfoLog_(shader, len, nullptr, log.data());
+    std::cerr << "compileShader() failed:\n" << log << "\n";
+    glDeleteShader_(shader);
+    return 0;
+}
+
+GLuint linkProgram(std::initializer_list<GLuint> shaders) {
+    GLuint program = glCreateProgram_();
+    for (GLuint s : shaders) glAttachShader_(program, s);
+    glLinkProgram_(program);
+
+    GLint ok = GL_FALSE;
+    glGetProgramiv_(program, GL_LINK_STATUS, &ok);
+    if (ok) {
+        return program;
+    }
+
+    GLint len;
+    glGetProgramiv_(program, GL_INFO_LOG_LENGTH, &len);
+    std::string log(len, '\0');
+    glGetProgramInfoLog_(program, len, nullptr, log.data());
+    std::cerr << "linkProgram() failed:\n" << log << "\n";
+    exit(EXIT_FAILURE);
 }
 
 namespace embedded_shaders {
@@ -64,3 +103,4 @@ GLuint compileShaderFromFile(GLenum type, const std::filesystem::path& path)
     }
     return shader;
 }
+

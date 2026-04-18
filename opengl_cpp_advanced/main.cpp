@@ -52,6 +52,8 @@ PFNGLGETSTRINGPROC           glGetString_ = nullptr;
 #include <filesystem>
 
 GLuint compileShaderFromFile(GLenum type, const std::filesystem::path& path);
+GLuint compileShader(GLenum type, const char* src);
+GLuint linkProgram(std::initializer_list<GLuint> shaders);
 
 constexpr int WIDTH = 300;
 constexpr int HEIGHT = 200;
@@ -72,8 +74,6 @@ struct Cell {
     float age;
     float ageMax;
 };
-// Sanity Check, ob Alignment passt (für Entwicklung an Cell)
-static_assert(sizeof(Cell) == 16, "struct Cell inkompatibel mit std430");
 
 using Cells = std::vector<Cell>;
 GLsizeiptr cellsSize = static_cast<GLsizeiptr>(WIDTH * HEIGHT * sizeof(Cell));

@@ -68,7 +68,7 @@ static bool loadGL(T& funcPtr, const char* name) {
     return true;
 }
 
-static bool loadGLExtensions() {
+inline bool loadGLExtensions() {
     bool ok = true;
     ok &= loadGL(glCreateShader_, "glCreateShader");
     ok &= loadGL(glShaderSource_, "glShaderSource");
@@ -111,45 +111,6 @@ static bool loadGLExtensions() {
     ok &= loadGL(glDeleteTextures_, "glDeleteTextures");
     ok &= loadGL(glGetString_, "glGetString");
     return ok;
-}
-
-static GLuint compileShader(GLenum type, const char* src) {
-    GLuint shader = glCreateShader_(type);
-    glShaderSource_(shader, 1, &src, nullptr);
-    glCompileShader_(shader);
-
-    GLint ok = GL_FALSE;
-    glGetShaderiv_(shader, GL_COMPILE_STATUS, &ok);
-    if (ok) {
-        return shader;
-    }
-
-    GLint len;
-    glGetShaderiv_(shader, GL_INFO_LOG_LENGTH, &len);
-    std::string log(len, '\0');
-    glGetShaderInfoLog_(shader, len, nullptr, log.data());
-    std::cerr << "compileShader() failed:\n" << log << "\n";
-    glDeleteShader_(shader);
-    return 0;
-}
-
-static GLuint linkProgram(std::initializer_list<GLuint> shaders) {
-    GLuint program = glCreateProgram_();
-    for (GLuint s : shaders) glAttachShader_(program, s);
-    glLinkProgram_(program);
-
-    GLint ok = GL_FALSE;
-    glGetProgramiv_(program, GL_LINK_STATUS, &ok);
-    if (ok) {
-        return program;
-    }
-
-    GLint len;
-    glGetProgramiv_(program, GL_INFO_LOG_LENGTH, &len);
-    std::string log(len, '\0');
-    glGetProgramInfoLog_(program, len, nullptr, log.data());
-    std::cerr << "linkProgram() failed:\n" << log << "\n";
-    exit(EXIT_FAILURE);
 }
 
 #endif //GOL_SHOWCASE_OPENGL_STUFF_H
